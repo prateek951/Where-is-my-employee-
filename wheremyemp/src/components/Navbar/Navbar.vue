@@ -5,7 +5,7 @@
         <a class="brand-logo left">WhereIsMyStaff</a>
         <ul class="right">
             <li><router-link :to="{name: 'Register'}">Register</router-link></li>
-            <li><a href="">Login</a></li>
+            <li><router-link :to="{name: 'Login'}">Login</router-link></li>
             <li><a @click="onLogout()">Logout</a></li>
         </ul>
       </div>
