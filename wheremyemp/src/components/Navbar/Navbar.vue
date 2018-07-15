@@ -4,8 +4,9 @@
       <div class="container">
         <a class="brand-logo left">WhereIsMyStaff</a>
         <ul class="right">
-            <li><a href="">Register</a></li>
+            <li><router-link :to="{name: 'Register'}">Register</router-link></li>
             <li><a href="">Login</a></li>
+            <li><a @click="onLogout()">Logout</a></li>
         </ul>
       </div>
     </nav>
@@ -14,12 +15,22 @@
 
 
 <script>
+import firebase from 'firebase';
     export default {
         name: 'Navbar',
         data() {
             return {
 
             }
+        },
+        methods: {
+          onLogout(){
+            firebase.auth().signOut()
+            .then(res => {
+              console.log(res);
+              this.$router.push({name : 'Register'});
+            });
+          } 
         }
     }
 </script>
