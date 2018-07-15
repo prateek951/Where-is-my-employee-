@@ -1,6 +1,7 @@
 <template>
     <div class="register container">
         <form class="card-panel" @submit.prevent="doRegister()">
+            <p class="red-text center" v-if="mainfeedback">{{mainfeedback}}</p>
             <h2 class="center deep-purple-text">Register</h2>
             <div class="field">
                 <label for="email">Email:</label>
@@ -14,7 +15,7 @@
                 <label for="name">Username:</label>
                 <input type="text" placeholder="Name" v-model="username">
             </div>
-            <p class="red-text center" v-if="feedback">{{feedback}}}</p>
+            <p class="red-text center" v-if="feedback">{{feedback}}</p>
             <div class="field center">
                 <button class="btn deep-purple">Register</button>
             </div>
@@ -26,10 +27,15 @@
 <script>
 import slugify from 'slugify'
 import db from '@/utils/fb'
+import firebase from 'firebase'
+
+
 export default{
         name: 'Register',
         data(){
             return {
+                mainfeedback: '',
+                isRegistered: false,
                 email: null,
                 password: null,
                 username: null,
@@ -40,7 +46,7 @@ export default{
         methods: {
               doRegister(){
                 console.log('inside the doRegister call....');
-                if(this.username){
+                if(this.username && this.email && this.password){
                     this.slug = slugify(this.username, {
                         replacement: '-',
                         remove: /[$*_+~.()'"!\-:@]/g,
@@ -51,12 +57,29 @@ export default{
                         if(doc.exists){
                             this.feedback = 'Username already exists';
                         }else{
-                            this.feedback = 'Username is available';
+                            // this.feedback = 'Username is available';
+                            firebase.auth().createUserWithEmailAndPassword(this.email,this.password)
+                            .then(res => {
+                                console.log(res);
+                                this.email = '';
+                                this.password = '';
+                                this.username = '';
+                                this.isRegistered = true;
+                                this.feedback = '';
+                                this.mainfeedback = 'You are now registered and can now login';
+                                
+                            })
+                            .catch(err => {
+                                console.log('inside the catch block');
+                                if(!this.isRegistered || err){
+                                    this.feedback = err.message;
+                                }
+                            })
                         }
                     })
                     console.log(this.slug);
                 }else{
-                    this.feedback = 'You must provide a username';
+                    this.feedback = 'You must provide all the fields';
                 }
         
         
