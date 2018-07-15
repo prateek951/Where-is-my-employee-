@@ -2,7 +2,7 @@
   <div class="navbar">
     <nav class="deep-purple darken-1">
       <div class="container">
-        <a class="brand-logo left">WhereIsMyStaff</a>
+        <router-link :to="{ name: 'Map'}">WhereIsMyStaff</router-link>
         <ul class="right">
             <li><router-link :to="{name: 'Register'}">Register</router-link></li>
             <li><router-link :to="{name: 'Login'}">Login</router-link></li>
@@ -25,10 +25,11 @@ import firebase from 'firebase';
         },
         methods: {
           onLogout(){
+            console.log('inside the doLogout method....');
             firebase.auth().signOut()
             .then(res => {
               console.log(res);
-              this.$router.push({name : 'Register'});
+              this.$router.push({name : 'Login'});
             });
           } 
         }
