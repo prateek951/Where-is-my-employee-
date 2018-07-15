@@ -2,13 +2,15 @@
     <div class="map">
         <h2>Map</h2>
         <div class="google-map" id="map">
-
+            
         </div>
     </div>
 </template>
 
 
 <script>
+import firebase from 'firebase'
+
     export default {
         name: 'Map',
         data(){
@@ -33,6 +35,8 @@
         },
         mounted() {
             this.renderMap();
+            console.log(firebase.auth().currentUser);      
+           
         }
     }
 </script>
