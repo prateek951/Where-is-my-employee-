@@ -11,9 +11,10 @@
                 <input type="password" placeholder="Password" v-model="password">
             </div>
             <div class="field">
-                <label for="name">Name:</label>
-                <input type="text" placeholder="Name" v-model="name">
+                <label for="name">Username:</label>
+                <input type="text" placeholder="Name" v-model="username">
             </div>
+            <p class="red-text center" v-if="feedback">{{feedback}}}</p>
             <div class="field center">
                 <button class="btn deep-purple">Register</button>
             </div>
@@ -23,18 +24,42 @@
 
 
 <script>
-    export default{
+import slugify from 'slugify'
+import db from '@/utils/fb'
+export default{
         name: 'Register',
         data(){
             return {
-                email: '',
-                password: '',
-                name: ''
+                email: null,
+                password: null,
+                username: null,
+                feedback : null,
+                slug: null 
             }
         },
         methods: {
-            doRegister(){
+              doRegister(){
                 console.log('inside the doRegister call....');
+                if(this.username){
+                    this.slug = slugify(this.username, {
+                        replacement: '-',
+                        remove: /[$*_+~.()'"!\-:@]/g,
+                        lower: true
+                    });
+                   let ref = db.collection('users').doc(this.slug);
+                    ref.get().then(doc => {
+                        if(doc.exists){
+                            this.feedback = 'Username already exists';
+                        }else{
+                            this.feedback = 'Username is available';
+                        }
+                    })
+                    console.log(this.slug);
+                }else{
+                    this.feedback = 'You must provide a username';
+                }
+        
+        
             }
         }
     }
