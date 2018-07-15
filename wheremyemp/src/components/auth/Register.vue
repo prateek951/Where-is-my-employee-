@@ -59,16 +59,20 @@ export default{
                         }else{
                             // this.feedback = 'Username is available';
                             firebase.auth().createUserWithEmailAndPassword(this.email,this.password)
-                            .then(res => {
-                                console.log(res);
-                                this.email = '';
+                            .then(cred => {
+                                console.log(cred.user);
+                               ref.set({
+                                   username : this.username,
+                                   geolocation: null,
+                                   user_id: cred.user.uid
+                               })
+                               this.email = '';
                                 this.password = '';
                                 this.username = '';
                                 this.isRegistered = true;
                                 this.feedback = '';
                                 this.mainfeedback = 'You are now registered and can now login';
-                                
-                            })
+                            }).then(() => this.$router.push({name: 'Map'}))
                             .catch(err => {
                                 console.log('inside the catch block');
                                 if(!this.isRegistered || err){
