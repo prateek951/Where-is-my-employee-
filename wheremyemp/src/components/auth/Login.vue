@@ -25,34 +25,32 @@ export default {
     name: 'Login',
     data(){
         return {
-            email: '',
-            password: '',
+            email: null,
+            password: null,
             feedback: ''
         }
     },
     methods: {
-        doLogin(){
-            console.log('inside the doLogin call....');
-            if(this.email && this.password){
-                firebase.auth().signInWithEmailAndPassword(this.email,this.password)
-                .then(cred => {
-                    console.log(cred.user);
-                    //will set geolocation at some later stage.
-                    this.email = '';
-                    this.password = '';
-                    setTimeout(() => {
-                        this.feedback = 'You are getting logged up...';
-                    }, 2000);
-                }).then(() => this.$router.push({name: 'Map'}))
-                .catch(err => {
-                    if(err){
-                        this.feedback = err.message;
-                    }
-                });
+        async doLogin(){
+            console.log('inside the doLogin method....');
+            if(this.password && this.email){
+                try {
+                    const pr =  await firebase.auth().signInWithEmailAndPassword(this.email,this.password);
+                    const cred = await pr;
+                    console.log('the response for the login',cred.user);    
+                    this.feedback = null;
+                    this.$router.push({name: 'Map'});
+                } catch (error) {
+                    console.log('Some error occured');
+                    this.feedback = error.message;
+                }
             }else{
-                this.feedback = 'Fields cannot be left blank';
+                this.feedback = 'Please fill in all the fields';
             }
         }
+    
+    
+    
     }  
 }
 </script>
