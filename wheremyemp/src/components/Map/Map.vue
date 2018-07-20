@@ -10,8 +10,10 @@
 
 <script>
 import firebase from 'firebase'
+import db from '@/utils/fb'
 
-    export default {
+
+export default {
         name: 'Map',
         data(){
             return {
@@ -34,6 +36,10 @@ import firebase from 'firebase'
             }
         },
         mounted() {
+            //get current user
+            let user = firebase.auth().currentUser
+            // console.log(user)
+
             //get user geolocation and then render the map
             // console.log('inside the mounted hook')
             // console.log(firebase.auth().currentUser);                 
@@ -41,9 +47,17 @@ import firebase from 'firebase'
                 navigator.geolocation.getCurrentPosition(pos => {
                     this.lat = pos.coords.latitude
                     this.lng = pos.coords.longitude
-                    this.renderMap()
-                },err => {
-                    console.log(err)
+                    //find the user record update geo coordinates
+                    db.collection('users').where('user_id','==',user.uid).get()
+                    .then(snapshot => snapshot.forEach(doc => {
+                        db.collection('users').doc(doc.id).update({
+                            geolocation: {
+                                lat: pos.coords.latitude,
+                                lng: pos.coords.longitude
+                            }
+                        }).then(() => this.renderMap())
+                    }))
+                },() => {
                     this.renderMap()
                 },{
                     maximumAge: 60000,

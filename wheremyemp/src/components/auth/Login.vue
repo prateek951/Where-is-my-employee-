@@ -20,7 +20,7 @@
 
 
 <script>
-import firebase from 'firebase';
+import firebase from 'firebase'
 export default {
     name: 'Login',
     data(){
@@ -32,20 +32,20 @@ export default {
     },
     methods: {
         async doLogin(){
-            console.log('inside the doLogin method....');
+            // console.log('inside the doLogin method....')
             if(this.password && this.email){
                 try {
-                    const pr =  await firebase.auth().signInWithEmailAndPassword(this.email,this.password);
-                    const cred = await pr;
-                    console.log('the response for the login',cred.user);    
-                    this.feedback = null;
-                    this.$router.push({name: 'Map'});
+                    const pr =  await firebase.auth().signInWithEmailAndPassword(this.email,this.password)
+                    const cred = await pr
+                    console.log('the response for the login',cred.user)
+                    this.feedback = null
+                    this.$router.push({name: 'Map'})
                 } catch (error) {
-                    console.log('Some error occured');
-                    this.feedback = error.message;
+                    console.log('Some error occured')
+                    this.feedback = error.message
                 }
             }else{
-                this.feedback = 'Please fill in all the fields';
+                this.feedback = 'Please fill in all the fields'
             }
         }
     
