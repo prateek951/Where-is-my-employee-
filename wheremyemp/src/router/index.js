@@ -3,15 +3,19 @@ import VueRouter from 'vue-router';
 import Map from '@/components/Map/Map';
 import Register from '@/components/auth/Register';
 import Login from '@/components/auth/Login';
+import firebase from 'firebase';
 
 Vue.use(VueRouter);
 
-export default new VueRouter({
+const router = new VueRouter({
     routes: [
         {
             path: '/',
             name: 'Map',
-            component: Map        
+            component: Map,
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/register',
@@ -25,3 +29,21 @@ export default new VueRouter({
         }
     ]
 })
+
+
+router.beforeEach(( to, from, next) => {
+    //check for auth 
+    if(to.matched.some(rec => rec.meta.requiresAuth)){
+        //chef auth state of user
+        let user = firebase.auth().currentUser 
+        if(user){
+            next()
+        }else{
+            next({ name: 'Login' })
+        }
+    }else{
+        next()
+    }
+})
+
+export default router

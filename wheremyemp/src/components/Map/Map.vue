@@ -12,7 +12,6 @@
 import firebase from 'firebase'
 import db from '@/utils/fb'
 
-
 export default {
         name: 'Map',
         data(){
