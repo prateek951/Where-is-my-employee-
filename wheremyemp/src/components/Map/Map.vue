@@ -34,9 +34,25 @@ import firebase from 'firebase'
             }
         },
         mounted() {
-            this.renderMap();
-            console.log(firebase.auth().currentUser);      
-           
+            //get user geolocation and then render the map
+            // console.log('inside the mounted hook')
+            // console.log(firebase.auth().currentUser);                 
+            if(navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(pos => {
+                    this.lat = pos.coords.latitude
+                    this.lng = pos.coords.longitude
+                    this.renderMap()
+                },err => {
+                    console.log(err)
+                    this.renderMap()
+                },{
+                    maximumAge: 60000,
+                    timeout: 3000
+                })
+            }else{
+                //position centre by default values
+                this.renderMap()
+            }
         }
     }
 </script>
