@@ -32,7 +32,7 @@ import firebase from 'firebase';
               console.log(res);
               this.$router.push({name : 'Login'})
             });
-          } 
+          }
         },
         created(){
           //check for the auth of the user.If the user is loggedin then the user is set and the register and login buttons
@@ -41,7 +41,8 @@ import firebase from 'firebase';
            firebase.auth().onAuthStateChanged(user => {
              if(user){
                 this.user = user 
-             }else{
+              // console.log(this.user)
+              }else{
                this.user = null
              }
            })
