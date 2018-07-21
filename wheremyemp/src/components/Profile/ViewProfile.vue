@@ -1,9 +1,16 @@
 <template>
     <div class="view-profile container">
         <div v-if="profile" class="card">
-            <h2 class="deep-purple-text center">{{profile.username}}'s Wall</h2>        
+            <h2 class="deep-purple-text center">{{ profile.username }}'s Wall</h2>        
             <ul class="comments collection">
-                <li class="collection-item">Comments</li>
+                <li class="collection-item" v-for="(comment,index) in comments" :key="index">
+                    <div class="deep-purple-text">
+                        {{ comment.from }}
+                    </div>
+                    <div class="grey-text text-darken-2">
+                        {{ comment.content }}
+                    </div>
+                </li>
             </ul>
             <form @submit.prevent="onAddComment()">
                 <div class="field">
@@ -18,32 +25,66 @@
 
 <script>
 import db from '@/utils/fb'
-
+import firebase from 'firebase'
 export default {
     name: 'ViewProfile',
     data(){
         return {
            profile:null,
            newcom: null,
-           feedback: null 
+           feedback: null,
+           user: null,
+           comments: []
         }
     },
     methods: {
         onAddComment(){
             console.log('inside the add comment method....');
             if(this.newcom === null || this.newcom === '') {
-                this.feedback = 'Please add a comment'
+                this.feedback = 'You must enter a comment to add it'
+            }else{
+                this.feedback = null;
+                db.collection('comments').add({
+                    to: this.$route.params.id,
+                    from: this.user.id,
+                    content: this.newcom,
+                    time: Date.now()
+                }).then(() => this.newcom = null)
             }
         }
     },
     created() {
         console.log('inside the created hook')
         let ref = db.collection('users')
+        
+        //get current user
+        ref.where('user_id','==',firebase.auth().currentUser.uid).get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                this.user = doc.data(),
+                this.user.id = doc.id
+            })
+        })
+        
         ref.doc(this.$route.params.id).get()
         .then(user => {
             this.profile = user.data()
         })
         
+        //comments
+        db.collection('comments').where('to','==',this.$route.params.id)
+        .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if(change.type === 'added'){
+                    this.comments.unshift({
+                        from: change.doc.data().from,
+                        content: change.doc.data().content 
+                    })
+                }
+            })
+        })
+
+
     },
 }
 </script>
